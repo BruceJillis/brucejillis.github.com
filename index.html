@@ -235,17 +235,31 @@ canvas {
 }
 
 #caption {
-	width: 100%; height: 234px;
+	width: calc(100% - 32px);; height: 234px;
+	padding: 0 16px;
 	background-color: #fff;
 	position: absolute;
 	top: 13%;
 	pointer-events: none;
+}
+#caption h1 {
+	position: relative;
+	top: 20px;
+	left: 20px;
+}
+#caption h2 {
+	position: relative;
+	top: 2px;
+	left: 20px;
+
 }
 </style>
 </head>
 <body>
 	<canvas id="voronoiCanvas" style="cursor:crosshair"></canvas>
 	<div id="caption">
+		<h1>Jillis ter Hove</h1>
+		<h2>Can be found on, <a href="#">Github</a></h2>
 	</div>
 </body>
 </html>
