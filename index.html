@@ -63,6 +63,7 @@
 				var mouse = me.normalizeEventCoords(me.canvas,e);
 				site.x = mouse.x;
 				site.y = mouse.y;
+				me.voronoi.recycle(me.diagram);
 				me.diagram = me.voronoi.compute(me.sites,me.bbox);
 				me.render();
 			};
@@ -92,6 +93,7 @@
 				this.sites[i] = site;
 			}
 			// recompute and render
+			this.voronoi.recycle(this.diagram);
 			this.diagram = this.voronoi.compute(this.sites, this.bbox);
 			this.render();
 		},
@@ -99,6 +101,7 @@
 			this.sites = [];
 			// we want at least one site (tracking the mouse)
 			this.addSite(0, 0);
+			this.voronoi.recycle(this.diagram);
 			this.diagram = this.voronoi.compute(this.sites, this.bbox);
 		},
 
@@ -113,6 +116,7 @@
 				// random site within margin distance from canvas border
 				this.addSite(Math.round(xo + self.Math.random()*dx), Math.round(yo + self.Math.random()*dy));
 			}
+			this.voronoi.recycle(this.diagram);
 			this.diagram = this.voronoi.compute(this.sites, this.bbox);
 		},
 
@@ -125,6 +129,7 @@
 				v: Math.random(),
 				c: this.colors[Math.round(Math.random() * this.colors.length)]
 			});
+			this.voronoi.recycle(this.diagram);
 			this.diagram = this.voronoi.compute(this.sites, this.bbox);
 		},
 		renderEdges: function(ctx, color) {
