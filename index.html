@@ -196,6 +196,7 @@
 				this.renderCell(ctx, cell, '#fff');
 			}
 			if (document.location.hash == '#debug') {
+				document.getElementById('caption').style.display = 'none';
 				// edges
 				this.renderEdges(ctx, '#f0f');
 				// draw sites
@@ -226,7 +227,7 @@ canvas {
 	display:block;
 }
 
-#title {
+#caption {
 	width: 100%; height: 234px;
 	background-color: #fff;
 	position: absolute;
@@ -237,7 +238,7 @@ canvas {
 </head>
 <body>
 	<canvas id="voronoiCanvas" style="cursor:crosshair"></canvas>
-	<div id="title">
+	<div id="caption">
 	</div>
 </body>
 </html>
