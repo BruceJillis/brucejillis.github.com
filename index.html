@@ -48,7 +48,8 @@
 				s: Math.random() * 1.0,
 				v: Math.random() * 1.0
 			};
-			console.log('base color: ', Please.HSV_to_HEX(base));
+			console.log('base color (hsv): ', base);
+			console.log('base color (hex): ', Please.HSV_to_HEX(base));
 			this.colors = Please.make_scheme(base, {
 					scheme_type: 'cst',
 					amount: 10,
