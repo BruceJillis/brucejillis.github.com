@@ -3,15 +3,25 @@
 <head>
 	<meta charset=utf-8 />
 	<title></title>
-<!-- 	<link rel="stylesheet" type="text/css" media="screen" href="css/master.css" /> -->
 	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script src="js/jquery.easing.1.3.js"></script>
 	<!--[if IE]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	<script type="text/javascript" src="js/rhill-voronoi-core.js"></script>
 	<script type="text/javascript" src="js/please.js"></script>
 	<script id="script" type="text/javascript">
+	function pick(list, previous) {
+		var result = list[Math.round(Math.random() * (list.length - 1))];
+		if (typeof previous != "undefined") {
+			while (pick == previous) {
+				result = list[Math.round(Math.random() * (list.length - 1))];
+			}
+		}
+		return result;
+	}
+
 	var VoronoiAnimation = {
 		voronoi: new Voronoi(),
 		sites: [],
@@ -39,7 +49,8 @@
 		init: function() {
 			var me = this;
 			this.canvas = document.getElementById('voronoiCanvas');
-			// update size of canvas
+			this.overlay = document.getElementById('overlayCanvas');
+			// update with size of canvas
 			this.bbox.xr = this.canvas.width;
 			this.bbox.yb = this.canvas.height;
 			// generate colors
@@ -48,16 +59,19 @@
 				s: Math.random() * 1.0,
 				v: Math.random() * 1.0
 			};
+			// debug
 			console.log('base color (hsv): ', base);
 			console.log('base color (hex): ', Please.HSV_to_HEX(base));
+			var amount = 27;
+			// make color scheme
 			this.colors = Please.make_scheme(base, {
 					scheme_type: 'cst',
-					amount: 10,
-					seperation: 10,
+					amount: 5,
+					seperation: 25,
 					format: 'hex'
 			});
 			// mouse events
-			$(this.canvas).on('mousemove touchmove', function(e) {
+			$(this.canvas).on('mousemove', function(e) {
 				if (!me.sites.length) 
 					return;
 				var site = me.sites[0];
@@ -65,15 +79,34 @@
 				site.x = mouse.x;
 				site.y = mouse.y;
 				me.voronoi.recycle(me.diagram);
-				me.diagram = me.voronoi.compute(me.sites,me.bbox);
+				me.diagram = me.voronoi.compute(me.sites, me.bbox);
 				me.render();
 			});
 			// generate random diagram
-			this.randomSites(25 + Math.random() * 25, true);
+			this.randomSites(amount, true);
 			// render it
 			this.render();
 			// animate sites
 			setInterval('VoronoiAnimation.animate()', 1000/30);
+			// show byLines
+			this.byLineEl = document.getElementById('byline');
+			this.prevByLine = byLines[0];
+			this.byLineEl.innerHTML = byLines[0];
+			setInterval('VoronoiAnimation.ticker()', 5 * 1000);
+		},
+		ticker: function() {
+			var byLine = pick(byLines, this.prevByLine);
+			this.prevByLine = byline;
+			var el = this.byLineEl;
+			$(this.byLineEl).animate({
+				opacity: 0
+			}, 750, "easeOutQuad", function() {		
+				el.innerHTML = byLine;
+				$(el).animate({
+					opacity: 1
+				}, 1000, "easeInQuad");
+			});
+			
 		},
 		animate: function() {
 			for (var i=1; i<this.sites.length; i++) {
@@ -105,7 +138,6 @@
 			this.voronoi.recycle(this.diagram);
 			this.diagram = this.voronoi.compute(this.sites, this.bbox);
 		},
-
 		randomSites: function(n, clear) {
 			if (clear)
 				this.sites = [];
@@ -120,7 +152,6 @@
 			this.voronoi.recycle(this.diagram);
 			this.diagram = this.voronoi.compute(this.sites, this.bbox);
 		},
-
 		addSite: function(x,y) {
 			this.sites.push({
 				x: x,
@@ -178,14 +209,30 @@
 				ctx.fill();
 			}
 		},
+		renderCellOutline: function(ctx, cell, color) {
+			var halfedges = cell.halfedges;
+			var nHalfedges = halfedges.length;
+			if (nHalfedges > 2) {
+				v = halfedges[0].getStartpoint();
+				ctx.beginPath();
+				ctx.moveTo(v.x,v.y);
+				for (var iHalfedge=0; iHalfedge<nHalfedges; iHalfedge++) {
+					v = halfedges[iHalfedge].getEndpoint();
+					ctx.lineTo(v.x, v.y);
+				}
+				ctx.strokeStyle = color;
+				ctx.stroke();
+			}
+		},
+		clear: function(ctx, color, alpha) {
+			ctx.globalAlpha = alpha;
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+		},
 		render: function() {
 			var ctx = this.canvas.getContext('2d');
-			// background
-			ctx.globalAlpha = 1;
-			ctx.beginPath();
-			ctx.rect(0,0,this.canvas.width,this.canvas.height);
-			ctx.fillStyle = '#fdd';
-			ctx.fill();
+			this.clear(ctx, '#fdd', 1.0);
+			var ovr = this.overlay.getContext('2d');
+			this.clear(ovr, '#000', 1.0);
 			// voronoi 
 			// render cells
 			for(var i=0; i < this.diagram.cells.length; i++) {
@@ -199,7 +246,10 @@
 			var cell = this.diagram.cells[this.sites[0].voronoiId];
 			// there is no guarantee a Voronoi cell will exist for any particular site
 			if (cell) {
-				this.renderCell(ctx, cell, '#fff');
+//				debugger;
+				this.renderCellOutline(ovr, cell, '#000');
+				ctx.globalAlpha = 0.5;
+				this.renderCell(ovr, cell, '#fff');
 			}
 			if (document.location.hash == '#debug') {
 				document.getElementById('caption').style.display = 'none';
@@ -211,47 +261,75 @@
 		}
 	};
 
+	var byLines = [
+		'Can be found on, <a href="https://github.com/brucejillis">Github</a>',
+		'Can be found on, <a href="https://www.youtube.com/user/JillisterHove">YouTube</a>',
+		'Is sometimes on, <a href="https://twitter.com/jillis">Twitter</a>',
+		'Lives in, <a href="https://www.google.nl/maps/place/Arnhem/@52.0056159,5.8965987,12z/data=!3m1!4b1!4m2!3m1!1s0x47c7ba91ce9b2273:0x161c5ae0f973cad7?hl=en">Arnhem, the Netherlands</a>'
+	];
+
 	$(document).ready(function() {
 			var canvas = document.getElementById('voronoiCanvas');
+			var overlay = document.getElementById('overlayCanvas');
 			window.addEventListener('resize', resizeCanvas, false);
 			function resizeCanvas() {
+				// main canvas
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight;
+				// overlay
+				overlay.width = window.innerWidth;
+				overlay.height = window.innerHeight;
 				VoronoiAnimation.init();
 				// dont forget to remove the listener again, or the animation goes wild on resize
 				window.removeEventListener('resize', resizeCanvas);
 			}
+			// resize canvi to browser size
 			resizeCanvas();
 	});
 </script>
+<link href='http://fonts.googleapis.com/css?family=Josefin+Sans:700' rel='stylesheet' type='text/css'>
 <style>
 html, body {
-	width: 100%; height: 100%; margin: 0; padding: 0;
+	width: 100%; height: 100%; 	
+}
+body {
+	overflow:hidden;
+	margin: 0; padding: 0;
 }
 canvas {
 	width: calc(100% - 32px); height: calc(100% - 32px);
-	display:block;
+	display: block;
 	padding: 16px;
 }
-
+#overlayCanvas {
+	pointer-events: none;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
 #caption {
-	width: calc(100% - 32px);; height: 234px;
-	padding: 0 16px;
+	width: calc(100% - 32px);
+	height: 234px;
+	margin: 0 16px;
 	background-color: #fff;
 	position: absolute;
 	top: 13%;
 	pointer-events: none;
+	font-size: 1.5em;
+	line-height: 1.1em;
+	font-family: 'Josefin Sans', sans-serif;
 }
 #caption h1 {
 	position: relative;
 	top: 20px;
 	left: 20px;
+	font-size: 2.5em;
 }
 #caption h2 {
 	position: relative;
 	top: 2px;
 	left: 20px;
-
+	pointer-events: all;
 }
 </style>
 </head>
@@ -259,7 +337,8 @@ canvas {
 	<canvas id="voronoiCanvas"></canvas>
 	<div id="caption">
 		<h1>Jillis ter Hove</h1>
-		<h2>Can be found on, <a href="#">Github</a></h2>
+		<h2 id="byline"></h2>
 	</div>
+	<canvas id="overlayCanvas"></canvas>
 </body>
 </html>
