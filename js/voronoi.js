@@ -329,7 +329,7 @@ $(document).ready(function() {
 		// resize canvi to browser size
 		resizeCanvas();
 		// listen for clicks
-		$('a').live(function(e) {
+		$('h2 > a').live(function(e) {
 			e.preventDefault();
 			var href = $(this).attr('href');
 			ga('send', {
