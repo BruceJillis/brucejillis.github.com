@@ -216,6 +216,7 @@ var VoronoiAnimation = {
 			var _width = ctx.lineWidth;
 			ctx.lineWidth = width;
 		}
+		ctx.strokeStyle = color;
 		var halfedges = cell.halfedges;
 		var nHalfedges = halfedges.length;
 		if (nHalfedges > 2) {
@@ -226,7 +227,6 @@ var VoronoiAnimation = {
 				v = halfedges[iHalfedge].getEndpoint();
 				ctx.lineTo(v.x, v.y);
 			}
-			ctx.strokeStyle = color;
 			ctx.stroke();
 		}
 		if (typeof width != 'undefined') {
