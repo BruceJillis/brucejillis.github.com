@@ -260,7 +260,7 @@ var VoronoiAnimation = {
 				cell.site.c =  this.colors[Math.round(Math.random() * this.colors.length)];
 			}
 			this.renderCell(ctx, cell, cell.site.c);
-			//this.renderCellOutline(ctx, cell, cell.site.c, 0.5);
+			this.renderCellOutline(ctx, cell, cell.site.c, 0.5);
 			this.renderCellOutline(hdn, cell, this.colors[4], 1);
 		}
 		// highlight cell under mouse
