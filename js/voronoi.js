@@ -86,17 +86,12 @@ var VoronoiAnimation = {
 		setTimeout('VoronoiAnimation.animate()', 0);
 		// show byLines
 		this.byLineEl = document.getElementById('byline');
-		//this.byLineIndex = 0;
-		//this.prevByLine = byLines[this.byLineIndex];
-		//this.byLineEl.innerHTML = byLines[this.byLineIndex];
 		var byLine = pick(byLines);
 		this.prevByLine = byLine;
 		this.byLineEl.innerHTML = byLine;
 		setInterval('VoronoiAnimation.ticker()', 5 * 1000);
 	},
 	ticker: function() {
-		//this.byLineIndex++;
-		//var byLine = byLines[this.byLineIndex % byLines.length];
 		var byLine = pick(byLines, this.prevByLine);
 		this.prevByLine = byLine;
 		var el = this.byLineEl;
@@ -333,4 +328,18 @@ $(document).ready(function() {
 		}
 		// resize canvi to browser size
 		resizeCanvas();
+		// listen for clicks
+		$('a').live(function(e) {
+			e.preventDefault();
+			var href = $(this).attr('href');
+			ga('send', {
+			  'hitType': 'event',
+			  'eventCategory': 'outbound',
+			  'eventAction': 'link',
+			  'eventLabel': href,
+			  'hitCallback': function() {
+				  document.location = href;
+			  }
+			});
+		});
 });
