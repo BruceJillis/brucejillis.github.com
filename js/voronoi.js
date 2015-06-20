@@ -9,10 +9,12 @@ function darken(color, amount) {
 }
 
 function pick(list, previous) {
-	var result = list[Math.round(Math.random() * (list.length - 1))];
+	var p = Math.round(Math.random() * (list.length - 1));
+	var result = list[p];
 	if (typeof previous != "undefined") {
-		while (pick == previous) {
-			result = list[Math.round(Math.random() * (list.length - 1))];
+		while (result == previous) {
+			p = Math.round(Math.random() * (list.length - 1));
+			result = list[p];
 		}
 	}
 	return result;
@@ -77,11 +79,11 @@ var VoronoiAnimation = {
 			self.trackmouse = -1;
 		});
 		// add site at click position
-		$(this.canvas).on('click', function(e) {
-			e.preventDefault();
-			var mouse = me.normalizeEventCoords(me.canvas,e);
+		//$(this.canvas).on('click', function(e) {
+			//e.preventDefault();
+			//var mouse = me.normalizeEventCoords(me.canvas,e);
 			//self.addSite(mouse.x,mouse.y);
-		});
+		//});
 		// generate random diagram
 		this.randomSites(amount, true);
 		// render it
@@ -90,13 +92,19 @@ var VoronoiAnimation = {
 		setTimeout('VoronoiAnimation.animate()', 0);
 		// show byLines
 		this.byLineEl = document.getElementById('byline');
-		this.prevByLine = byLines[0];
-		this.byLineEl.innerHTML = byLines[0];
+		//this.byLineIndex = 0;
+		//this.prevByLine = byLines[this.byLineIndex];
+		//this.byLineEl.innerHTML = byLines[this.byLineIndex];
+		var byLine = pick(byLines);
+		this.prevByLine = byLine;
+		this.byLineEl.innerHTML = byLine;
 		setInterval('VoronoiAnimation.ticker()', 5 * 1000);
 	},
 	ticker: function() {
+		//this.byLineIndex++;
+		//var byLine = byLines[this.byLineIndex % byLines.length];
 		var byLine = pick(byLines, this.prevByLine);
-		this.prevByLine = byline;
+		this.prevByLine = byLine;
 		var el = this.byLineEl;
 		$(this.byLineEl).animate({
 			opacity: 0
@@ -104,7 +112,7 @@ var VoronoiAnimation = {
 			el.innerHTML = byLine;
 			$(el).animate({
 				opacity: 1
-			}, 1000, "easeInQuad");
+			}, 250, "easeInQuad");
 		});
 		
 	},
@@ -158,7 +166,6 @@ var VoronoiAnimation = {
 			vy: clamp(Math.random(), 0.2, 1.0),
 			c: pick(this.colors)
 		});
-		//this.voronoi.recycle(this.diagram);
 		this.diagram = this.voronoi.compute(this.sites, this.bbox);
 	},
 	renderEdges: function(ctx, color) {
@@ -292,8 +299,19 @@ var VoronoiAnimation = {
 var byLines = [
 	'Can be found on, <a href="https://github.com/brucejillis">Github</a>',
 	'Can be found on, <a href="https://www.youtube.com/user/JillisterHove">YouTube</a>',
-	'Is sometimes on, <a href="https://twitter.com/jillis">Twitter</a>',
-	'Lives in, <a href="https://www.google.nl/maps/place/Arnhem/@52.0056159,5.8965987,12z/data=!3m1!4b1!4m2!3m1!1s0x47c7ba91ce9b2273:0x161c5ae0f973cad7?hl=en">Arnhem, the Netherlands</a>'
+	'Can sometimes be found on, <a href="https://twitter.com/jillis">Twitter</a>',
+	'Lives in, <a href="https://www.google.nl/maps/place/Arnhem/@52.0056159,5.8965987,12z/data=!3m1!4b1!4m2!3m1!1s0x47c7ba91ce9b2273:0x161c5ae0f973cad7?hl=en">Arnhem, the Netherlands</a>',
+	'Can be contacted via, <a href="mailto://j.terhove (AT) gmail (DOT) com">j.terhove (AT) gmail (DOT) com</a>.',
+	'Once made a mario-like game where you are the bad guy, <a href="https://dl.dropboxusercontent.com/u/29254286/index.html">Before the Hero Arrives</a>.',
+	'Once made a top-down sailing simulation game, <a href="https://dl.dropboxusercontent.com/u/29254286/bgj2.html">Eco2</a>.',
+	'Once made some stuff in flash, <a href="https://dl.dropboxusercontent.com/u/29254286/juicy.html">games and juicyness</a>, <a href="https://dl.dropboxusercontent.com/u/29254286/FlxMinimap.html">flixel minimap</a>.',
+	'Once tried to make a game in unity, <a href="https://dl.dropboxusercontent.com/u/29254286/ionan/ionan.html">v2</a> < <a href="https://dl.dropboxusercontent.com/u/29254286/planetwide/Web.html">v1</a> < <a href="https://dl.dropboxusercontent.com/u/29254286/escape/escape.html">v0.1</a>.',
+	'Recorded some UI experiments in unity, <a href="https://dl.dropboxusercontent.com/u/29254286/v09.gif">as a GIF</a> and on <a href="https://www.youtube.com/watch?v=fTjL-R37vvU&ab_channel=JillisterHove">YouTube</a>.',
+	'Wrote libraries for language detection in, <a href="https://github.com/BruceJillis/PHP-Language-Detection">PHP</a> and <a href="https://github.com/BruceJillis/LanguageIdentification">python</a>.',
+	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=s2y-adFJeKQ&ab_channel=JillisterHove">Gaze Detecting Enderman Heads</a>.',
+	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=a1yORDZsHb8&ab_channel=JillisterHove">Prototype Dungeon Generator</a> + <a href="https://www.youtube.com/watch?v=55QhLcPvWS8&ab_channel=JillisterHove">more work</a>.',
+	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=Ns208w9rua0&ab_channel=JillisterHove">Mailbox Mod</a>.',
+	'Once tried to create a programming language, <a href="https://github.com/BruceJillis/fp.py">fp</a>.',
 ];
 
 $(document).ready(function() {
