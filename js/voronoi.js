@@ -38,9 +38,6 @@ var VoronoiAnimation = {
 		}
 		return {x:x-target.offsetLeft,y:y-target.offsetTop};
 	},
-	/**
-	 * @constructor
-	 */
 	init: function() {
 		var self = this;
 		// canvi
