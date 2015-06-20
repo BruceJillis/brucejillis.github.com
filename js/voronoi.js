@@ -62,18 +62,16 @@ var VoronoiAnimation = {
 			'#79BD8F',
 			'#00A388',
 		];
-		for(var i = 0; i < this.colors.length; i++) {
-			console.log('color ('+i+'): ', this.colors[i]);
-		}
 		// mouse events
 		self.trackmouse = -1;
 		$(this.canvas).on('mousemove', function(e) {
-			debugger;
 			self.trackmouse = self.sites.length-1;
 			var site = self.sites[self.trackmouse];
 			var mouse = me.normalizeEventCoords(me.canvas,e);
 			site.x = mouse.x;
+			site.vx = 0;
 			site.y = mouse.y;
+			site.vy = 0;
 		});
 		$(this.canvas).on('mouseout', function(e) {
 			self.trackmouse = -1;
@@ -82,15 +80,14 @@ var VoronoiAnimation = {
 		$(this.canvas).on('click', function(e) {
 			e.preventDefault();
 			var mouse = me.normalizeEventCoords(me.canvas,e);
-			self.addSite(mouse.x,mouse.y);
+			//self.addSite(mouse.x,mouse.y);
 		});
 		// generate random diagram
 		this.randomSites(amount, true);
 		// render it
 		this.render();
 		// animate sites
-		setTimeout('VoronoiAnimation.animate()', 1000/31);
-		setTimeout('VoronoiAnimation.draw()', 1000/31);
+		setTimeout('VoronoiAnimation.animate()', 0);
 		// show byLines
 		this.byLineEl = document.getElementById('byline');
 		this.prevByLine = byLines[0];
@@ -250,42 +247,45 @@ var VoronoiAnimation = {
 		ovr.globalCompositeOperation = 'destination-atop';
 		this.clear(ovr, '#000', 0.95);
 		var lns = this.lines.getContext('2d');
-		this.clear(lns, '#000');
+		this.clear(lns, '#fff');
 		var hdn = this.hidden.getContext('2d');
 		this.clear(hdn, '#000');
 		// voronoi 
-		// render cells
-		for(var i=0; i < this.diagram.cells.length; i++) {
-			var cell = this.diagram.cells[i];
-			if (cell.site.c == undefined) {
-				cell.site.c =  this.colors[Math.round(Math.random() * this.colors.length)];
-			}
-			if (this.trackmouse != -1 && this.sites[this.trackmouse].voronoiId == i) 
-				continue;
-			this.renderCell(ctx, cell, cell.site.c);
-			this.renderCellOutline(ctx, cell, cell.site.c, 1);
-			this.renderCellOutline(hdn, cell, this.colors[4], 1);
-		}
 		// highlight cell under mouse
 		if (this.trackmouse != -1) {
 			var cell = this.diagram.cells[this.sites[this.trackmouse].voronoiId];
 			// there is no guarantee a Voronoi cell will exist for any particular site
 			if (cell) {
 				this.renderCell(ovr, cell, '#fff');
-				this.renderCellOutline(ovr, cell, '#fff', 0.5);
 			}
 		}
-		// copy part over background to visible canvas		
-		var data = hdn.getImageData(0, 124 - 12, this.hidden.width, 234 + 8);
-		lns.putImageData(data, 1, 124 - 12);
+		// render cells
+		for(var i=0; i < this.diagram.cells.length; i++) {
+			var cell = this.diagram.cells[i];
+			if (cell.site.c == undefined) {
+				cell.site.c =  this.colors[Math.round(Math.random() * this.colors.length)];
+			}
+			this.renderCellOutline(hdn, cell, this.colors[4], 1);
+			if (this.trackmouse != -1 && this.sites[this.trackmouse].voronoiId == i) 
+				continue;
+			this.renderCell(ctx, cell, cell.site.c);
+			this.renderCellOutline(ctx, cell, cell.site.c, 0.5);
+		}
+
 		// debug
 		if (document.location.hash == '#debug') {
 			document.getElementById('caption').style.display = 'none';
 			// edges
-			this.renderEdges(ovr, '#f0f');
+			this.renderEdges(hdn, '#f0f');
+			this.renderEdges(ctx, '#f0f');
 			// draw sites
-			this.renderSites(ovr, '#f0f');
+			this.renderSites(hdn, '#f0f');
+			this.renderSites(ctx, '#f0f');
 		}
+		// copy part over background to visible canvas		
+		var data = hdn.getImageData(0, 124.141 - 12, this.hidden.width, 234 + 8);
+		lns.putImageData(data, 0, 124.141 - 13);
+
 	}
 };
 
