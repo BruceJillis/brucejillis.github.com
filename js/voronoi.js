@@ -43,6 +43,7 @@ var VoronoiAnimation = {
 		return {x:x-target.offsetLeft,y:y-target.offsetTop};
 	},
 	init: function() {
+		var self = this;
 		var me = this;
 		// canvi
 		this.canvas = document.getElementById('voronoiCanvas');
@@ -65,21 +66,23 @@ var VoronoiAnimation = {
 			console.log('color ('+i+'): ', this.colors[i]);
 		}
 		// mouse events
+		self.trackmouse = -1;
 		$(this.canvas).on('mousemove', function(e) {
-			if (!me.sites.length) 
-				return;
-			var site = me.sites[0];
+			debugger;
+			self.trackmouse = self.sites.length-1;
+			var site = self.sites[self.trackmouse];
 			var mouse = me.normalizeEventCoords(me.canvas,e);
 			site.x = mouse.x;
 			site.y = mouse.y;
-			//me.voronoi.recycle(me.diagram);
-
 		});
-		var self = this;
+		$(this.canvas).on('mouseout', function(e) {
+			self.trackmouse = -1;
+		});
 		// add site at click position
 		$(this.canvas).on('click', function(e) {
 			e.preventDefault();
-			self.addSite(e.pageX, e.pageY);
+			var mouse = me.normalizeEventCoords(me.canvas,e);
+			self.addSite(mouse.x,mouse.y);
 		});
 		// generate random diagram
 		this.randomSites(amount, true);
@@ -127,16 +130,12 @@ var VoronoiAnimation = {
 			this.sites[i] = site;
 		}
 		// recompute and render
-		//this.voronoi.recycle(this.diagram);
 		this.diagram = this.voronoi.compute(this.sites, this.bbox);
 		this.render();
 		setTimeout('VoronoiAnimation.animate()', 1000/60);
 	},
 	clearSites: function() {
 		this.sites = [];
-		// we want at least one site (tracking the mouse)
-		this.addSite(0, 0);
-		//this.voronoi.recycle(this.diagram);
 		this.diagram = this.voronoi.compute(this.sites, this.bbox);
 	},
 	randomSites: function(n, clear) {
@@ -150,7 +149,6 @@ var VoronoiAnimation = {
 			// random site within margin distance from canvas border
 			this.addSite(Math.round(xo + Math.random()*dx), Math.round(yo + Math.random()*dy));
 		}
-		//this.voronoi.recycle(this.diagram);
 		this.diagram = this.voronoi.compute(this.sites, this.bbox);
 	},
 	addSite: function(x,y) {
@@ -190,6 +188,7 @@ var VoronoiAnimation = {
 		var site;
 		ctx.beginPath();
 		ctx.fillStyle = color;
+		ctx.strokeStyle = color;
 		while (nSites--) {
 			site = sites[nSites];
 			ctx.rect(site.x-2/3,site.y-2/3,2,2);
@@ -208,6 +207,7 @@ var VoronoiAnimation = {
 				ctx.lineTo(v.x, v.y);
 			}
 			ctx.fillStyle = color;
+			ctx.strokeStyle = color;
 			ctx.fill();
 		}
 	},
@@ -239,6 +239,8 @@ var VoronoiAnimation = {
 		}
 		ctx.globalAlpha = alpha;
 		ctx.lineWidth = 1;
+		ctx.strokeStyle = '#000';
+		ctx.fillStyle = '#000';
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 	},
 	render: function() {
@@ -258,27 +260,32 @@ var VoronoiAnimation = {
 			if (cell.site.c == undefined) {
 				cell.site.c =  this.colors[Math.round(Math.random() * this.colors.length)];
 			}
+			if (this.trackmouse != -1 && this.sites[this.trackmouse].voronoiId == i) 
+				continue;
 			this.renderCell(ctx, cell, cell.site.c);
 			this.renderCellOutline(ctx, cell, cell.site.c, 1);
 			this.renderCellOutline(hdn, cell, this.colors[4], 1);
 		}
 		// highlight cell under mouse
-		var cell = this.diagram.cells[this.sites[0].voronoiId];
-		// there is no guarantee a Voronoi cell will exist for any particular site
-		if (cell) {
-			this.renderCell(ovr, cell, '#fff');
-			this.renderCellOutline(hdn, cell, '#fff', 2);
-		}
-		if (document.location.hash == '#debug') {
-			document.getElementById('caption').style.display = 'none';
-			// edges
-			this.renderEdges(ctx, '#f0f');
-			// draw sites
-			this.renderSites(ctx, '#f0f');
+		if (this.trackmouse != -1) {
+			var cell = this.diagram.cells[this.sites[this.trackmouse].voronoiId];
+			// there is no guarantee a Voronoi cell will exist for any particular site
+			if (cell) {
+				this.renderCell(ovr, cell, '#fff');
+				this.renderCellOutline(ovr, cell, '#fff', 0.5);
+			}
 		}
 		// copy part over background to visible canvas		
 		var data = hdn.getImageData(0, 124 - 12, this.hidden.width, 234 + 8);
 		lns.putImageData(data, 1, 124 - 12);
+		// debug
+		if (document.location.hash == '#debug') {
+			document.getElementById('caption').style.display = 'none';
+			// edges
+			this.renderEdges(ovr, '#f0f');
+			// draw sites
+			this.renderSites(ovr, '#f0f');
+		}
 	}
 };
 
