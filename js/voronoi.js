@@ -279,7 +279,7 @@ var VoronoiAnimation = {
 		}
 		// copy part over background to visible canvas		
 		var data = hdn.getImageData(0, 124 - 12, this.hidden.width, 234 + 8);
-		lns.putImageData(data, 0, 124 - 12);
+		lns.putImageData(data, 1, 124 - 12);
 	}
 };
 
