@@ -78,12 +78,6 @@ var VoronoiAnimation = {
 		$(this.canvas).on('mouseout', function(e) {
 			self.trackmouse = -1;
 		});
-		// add site at click position
-		//$(this.canvas).on('click', function(e) {
-			//e.preventDefault();
-			//var mouse = me.normalizeEventCoords(me.canvas,e);
-			//self.addSite(mouse.x,mouse.y);
-		//});
 		// generate random diagram
 		this.randomSites(amount, true);
 		// render it

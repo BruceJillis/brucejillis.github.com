@@ -56,14 +56,14 @@ canvas {
 	top: 20px;
 	left: 20px;
 	font-size: 2.5em;
-	max-width: 500px;
+	max-width: 325px;
 }
 #caption h2 {
 	position: relative;
 	top: 2px;
 	left: 20px;
 	pointer-events: all;
-	max-width: 750px;
+	max-width: 700px;
 }
 #caption h2 a, #caption h2 a:visited {
 	color: #111;
