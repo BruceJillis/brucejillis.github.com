@@ -37,7 +37,7 @@ canvas {
 	pointer-events: none;
 }
 #background {
-	background-color: white;
+	background-color: #fff;
 }
 #caption {
 	background-image: url('../img/bar.png');

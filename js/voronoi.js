@@ -19,7 +19,7 @@ var VoronoiAnimation = {
 	sites: [],
 	diagram: null,
 	// margin for placement of random dots
-	margin: 125,
+	/** @const */ margin: 125,
 	canvas: null,
 	colors: [],
 	bbox: {xl:0,xr:0,yt:0,yb:0},
@@ -38,9 +38,11 @@ var VoronoiAnimation = {
 		}
 		return {x:x-target.offsetLeft,y:y-target.offsetTop};
 	},
+	/**
+	 * @constructor
+	 */
 	init: function() {
 		var self = this;
-		var me = this;
 		// canvi
 		this.canvas = document.getElementById('voronoiCanvas');
 		this.overlay = document.getElementById('overlayCanvas');
