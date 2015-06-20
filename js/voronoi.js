@@ -1,7 +1,9 @@
+/** @nosideeffects */
 function clamp(v, min, max) {
 	return Math.max(min, Math.min(v, max));
 }
 
+/** @nosideeffects */
 function pick(list, previous) {
 	var p = Math.round(Math.random() * (list.length - 1));
 	var result = list[p];
