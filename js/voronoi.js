@@ -329,17 +329,8 @@ $(document).ready(function() {
 		// resize canvi to browser size
 		resizeCanvas();
 		// listen for clicks
-		$('h2 > a').live(function(e) {
-			e.preventDefault();
+		$(document).on("click", 'h2 > a', function(e) {
 			var href = $(this).attr('href');
-			ga('send', {
-			  'hitType': 'event',
-			  'eventCategory': 'outbound',
-			  'eventAction': 'link',
-			  'eventLabel': href,
-			  'hitCallback': function() {
-				  document.location = href;
-			  }
-			});
+			ga('send', 'event', 'button', 'click', 'outbound', {'href': href});
 		});
 });
