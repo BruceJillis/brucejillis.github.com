@@ -331,6 +331,6 @@ $(document).ready(function() {
 		// listen for clicks
 		$(document).on("click", 'h2 > a', function(e) {
 			var href = $(this).attr('href');
-			ga('send', 'event', 'button', 'click', 'outbound', {'href': href});
+			ga('send', 'event', 'click', 'outbound', href);
 		});
 });
