@@ -2,12 +2,6 @@ function clamp(v, min, max) {
 	return Math.max(min, Math.min(v, max));
 }
 
-function darken(color, amount) {
-	var hsv = Please.HEX_to_HSV(color);
-	hsv.v -= amount;
-	return Please.HSV_to_HEX(hsv);
-}
-
 function pick(list, previous) {
 	var p = Math.round(Math.random() * (list.length - 1));
 	var result = list[p];
