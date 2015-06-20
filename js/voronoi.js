@@ -62,7 +62,7 @@ var VoronoiAnimation = {
 			'#FFFF9D',
 			'#BEEB9F',
 			'#79BD8F',
-			'#00A388',
+			'#00A388'
 		];
 		// mouse events
 		self.trackmouse = -1;
@@ -300,7 +300,7 @@ var byLines = [
 	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=s2y-adFJeKQ&ab_channel=JillisterHove">Gaze Detecting Enderman Heads</a>.',
 	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=a1yORDZsHb8&ab_channel=JillisterHove">Prototype Dungeon Generator</a> + <a href="https://www.youtube.com/watch?v=55QhLcPvWS8&ab_channel=JillisterHove">more work</a>.',
 	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=Ns208w9rua0&ab_channel=JillisterHove">Mailbox Mod</a>.',
-	'Once tried to create a programming language, <a href="https://github.com/BruceJillis/fp.py">fp</a>.',
+	'Once tried to create a programming language, <a href="https://github.com/BruceJillis/fp.py">fp</a>.'
 ];
 
 $(document).ready(function() {
