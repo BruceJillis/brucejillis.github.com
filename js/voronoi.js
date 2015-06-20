@@ -73,8 +73,7 @@ var VoronoiAnimation = {
 			site.x = mouse.x;
 			site.y = mouse.y;
 			//me.voronoi.recycle(me.diagram);
-			me.diagram = me.voronoi.compute(me.sites, me.bbox);
-			me.render();
+
 		});
 		var self = this;
 		// add site at click position
