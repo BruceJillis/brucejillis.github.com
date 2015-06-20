@@ -64,7 +64,7 @@ var VoronoiAnimation = {
 		$(this.canvas).on('mousemove', function(e) {
 			self.trackmouse = self.sites.length-1;
 			var site = self.sites[self.trackmouse];
-			var mouse = me.normalizeEventCoords(me.canvas,e);
+			var mouse = self.normalizeEventCoords(self.canvas,e);
 			site.x = mouse.x;
 			site.vx = 0;
 			site.y = mouse.y;
