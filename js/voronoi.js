@@ -39,6 +39,9 @@ var VoronoiAnimation = {
 		return {x:x-target.offsetLeft,y:y-target.offsetTop};
 	},
 	init: function() {
+		// mark us as running
+		this.running = true;
+		// store ref to this for use in closures
 		var self = this;
 		// canvi
 		this.canvas = document.getElementById('voronoiCanvas');
@@ -84,6 +87,9 @@ var VoronoiAnimation = {
 		this.byLineEl.innerHTML = byLine;
 		setInterval('VoronoiAnimation.ticker()', 5 * 1000);
 	},
+	stop: function() {
+		this.running = false;
+	},
 	ticker: function() {
 		var byLine = pick(byLines, this.prevByLine);
 		this.prevByLine = byLine;
@@ -119,7 +125,10 @@ var VoronoiAnimation = {
 		// recompute and render
 		this.diagram = this.voronoi.compute(this.sites, this.bbox);
 		this.render();
-		setTimeout('VoronoiAnimation.animate()', 1000/60);
+		// if we are still running, do another loop of animation
+		if (this.running) {	
+			setTimeout('VoronoiAnimation.animate()', 1000/60);
+		}
 	},
 	clearSites: function() {
 		this.sites = [];
@@ -260,7 +269,6 @@ var VoronoiAnimation = {
 			this.renderCell(ctx, cell, cell.site.c);
 			this.renderCellOutline(ctx, cell, cell.site.c, 0.5);
 		}
-
 		// debug
 		if (document.location.hash == '#debug') {
 			document.getElementById('caption').style.display = 'none';
@@ -272,15 +280,16 @@ var VoronoiAnimation = {
 			this.renderSites(ctx, '#f0f');
 		}
 		// copy part over background to visible canvas		
-		var data = hdn.getImageData(0, 124.141 - 12, this.hidden.width, 234 + 8);
-		lns.putImageData(data, 0, 124.141 - 13);
-
+		var obj = document.getElementById('background');
+		var data = hdn.getImageData(0, (obj.offsetTop - 12), obj.offsetWidth + 20, obj.offsetHeight + 8);
+		lns.putImageData(data, -1, (obj.offsetTop - 12));
 	}
 };
 
 var byLines = [
 	'Can be found on, <a href="https://github.com/brucejillis">Github</a>',
 	'Can be found on, <a href="https://www.youtube.com/user/JillisterHove">YouTube</a>',
+	'Is available for web development work, <a href="mailto://j.terhove (AT) gmail (DOT) com">j.terhove (AT) gmail (DOT) com</a>.',
 	'Can sometimes be found on, <a href="https://twitter.com/jillis">Twitter</a>',
 	'Lives in, <a href="https://www.google.nl/maps/place/Arnhem/@52.0056159,5.8965987,12z/data=!3m1!4b1!4m2!3m1!1s0x47c7ba91ce9b2273:0x161c5ae0f973cad7?hl=en">Arnhem, the Netherlands</a>',
 	'Can be contacted via, <a href="mailto://j.terhove (AT) gmail (DOT) com">j.terhove (AT) gmail (DOT) com</a>.',
@@ -290,9 +299,9 @@ var byLines = [
 	'Once tried to make a game in unity, <a href="https://dl.dropboxusercontent.com/u/29254286/ionan/ionan.html">v2</a> < <a href="https://dl.dropboxusercontent.com/u/29254286/planetwide/Web.html">v1</a> < <a href="https://dl.dropboxusercontent.com/u/29254286/escape/escape.html">v0.1</a>.',
 	'Recorded some UI experiments in unity, <a href="https://dl.dropboxusercontent.com/u/29254286/v09.gif">as a GIF</a> and on <a href="https://www.youtube.com/watch?v=fTjL-R37vvU&ab_channel=JillisterHove">YouTube</a>.',
 	'Wrote libraries for language detection in, <a href="https://github.com/BruceJillis/PHP-Language-Detection">PHP</a> and <a href="https://github.com/BruceJillis/LanguageIdentification">python</a>.',
-	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=s2y-adFJeKQ&ab_channel=JillisterHove">Gaze Detecting Enderman Heads</a>.',
-	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=a1yORDZsHb8&ab_channel=JillisterHove">Prototype Dungeon Generator</a> + <a href="https://www.youtube.com/watch?v=55QhLcPvWS8&ab_channel=JillisterHove">more work</a>.',
-	'Really enjoyed playing minecraft, <a href="https://www.youtube.com/watch?v=Ns208w9rua0&ab_channel=JillisterHove">Mailbox Mod</a>.',
+	'Added some stuff to minecraft, <a href="https://www.youtube.com/watch?v=s2y-adFJeKQ&ab_channel=JillisterHove">Gaze Detecting Enderman Heads</a>.',
+	'Really enjoyed playing minecraft but wanted more to explore, <a href="https://www.youtube.com/watch?v=a1yORDZsHb8&ab_channel=JillisterHove">Prototype Dungeon Generator</a> + <a href="https://www.youtube.com/watch?v=55QhLcPvWS8&ab_channel=JillisterHove">more work</a>.',
+	'Enjoys participating in gamejam\'s, <a href="https://www.youtube.com/watch?v=Ns208w9rua0&ab_channel=JillisterHove">Modjam: Mailbox Mod</a>.',
 	'Once tried to create a programming language, <a href="https://github.com/BruceJillis/fp.py">fp</a>.'
 ];
 
@@ -302,6 +311,10 @@ $(document).ready(function() {
 		var lines = document.getElementById('linesCanvas');
 		var hidden = document.getElementById('hiddenCanvas');
 		window.addEventListener('resize', resizeCanvas, false);
+		function stopAndResizeCanvas() {
+			VoronoiAnimation.stop();
+			resizeCanvas();
+		}
 		function resizeCanvas() {
 			// main canvas
 			canvas.width = window.innerWidth;
@@ -317,7 +330,7 @@ $(document).ready(function() {
 			hidden.height = window.innerHeight;
 			VoronoiAnimation.init();
 			// dont forget to remove the listener again, or the animation goes wild on resize
-			window.removeEventListener('resize', resizeCanvas);
+			window.removeEventListener('resize', stopAndResizeCanvas);
 		}
 		// resize canvi to browser size
 		resizeCanvas();
