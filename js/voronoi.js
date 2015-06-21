@@ -89,6 +89,7 @@ var VoronoiAnimation = {
 	},
 	stop: function() {
 		this.running = false;
+		$(this.canvas).remove('mousemove', 'mouseout');
 	},
 	ticker: function() {
 		var byLine = pick(byLines, this.prevByLine);
@@ -281,8 +282,8 @@ var VoronoiAnimation = {
 		}
 		// copy part over background to visible canvas		
 		var obj = document.getElementById('background');
-		var data = hdn.getImageData(0, (obj.offsetTop - 12), obj.offsetWidth + 20, obj.offsetHeight + 8);
-		lns.putImageData(data, -1, (obj.offsetTop - 12));
+		var data = hdn.getImageData(0, (obj.offsetTop - 12), obj.offsetWidth + 32, obj.offsetHeight + 8);
+		lns.putImageData(data, 1, (obj.offsetTop - 12));
 	}
 };
 
